@@ -147,9 +147,113 @@ public class Electronics101 extends JFrame {
         boardHolder.setBorder(new LineBorder(new Color(185,190,187), 2));
         boardHolder.add(demoBoard);
 
+        //day2
+        JPanel sidePanel = new JPanel();
+        sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
+        sidePanel.setBackground(Color.WHITE);
+        sidePanel.setPreferredSize(new Dimension(285,0));
+        sidePanel.setBorder(BorderFactory.createCompoundBorder(
+            new LineBorder(new Color(205,212,208)),
+            new EmptyBorder(14,14,14,14)
+        ));
+
+        JLabel rulesTitle = new JLabel("Breadboard Rules");
+        rulesTitle.setFont(new Font("SansSerif", Font.BOLD, 16));
+        rulesTitle.setForeground(HEADER_GREEN);
+
+        JTextArea rules = new JTextArea(
+            "1. Each vertical column of 5 holes (A-E or F-J) is connected underneath. \n\n" +
+            "2. The center trench splits the top half from the bottom half. \n\n" +
+            "3. Both the top and bottom edges have two horizontal power rails: (red) and - (blue). \n\n" + 
+            "4. Put the two legs of a resistor or led in different columns so they dont short together."
+        );
+
+        rules.setWrapStyleWord(true);
+        rules.setLineWrap(true);
+        rules.setEditable(false);
+        rules.setOpaque(false);
+        rules.setFont(new Font("SansSerif", Font.PLAIN, 13));
+
+        sidePanel.add(rulesTitle);
+        sidePanel.add(Box.createVerticalStrut(10));
+        sidePanel.add(rules);
+
+        main.add(boardHolder, BorderLayout.CENTER);
+        main.add(sidePanel, BorderLayout.EAST);
         return main;
        }
 
+       private JComponent createSimulatorPanel(){
+        JPanel main = new JPanel (new BorderLayout(14,10 ));
+        main.setBackground(BG_LIGHT);
+        main.setBorder(new EmptyBorder(12,12,12,12));
+
+        JLabel statusLabel = new JLabel("Pick a wire or part above, then click two holes on the board.");
+        statusLabel.setOpaque(true);
+        statusLabel.setBackground(TINT_GREEN);
+        statusLabel.setBorder(BorderFactory.createCompoundBorder(
+            new LineBorder(new Color(180,205,190)),
+            new EmptyBorder(8,10,8,10)
+        ));
+
+        JLabel meterReadout = new JLabel("<html><div style='text-align:center;'><b>0.00 V</b> &nbsp;|&nbsp; <b>0.00 mA</b><br><span style='font-size:10px;color:#cbd5e1;'>Select Multimeter & click 2 holes</span></div></html>", SwingConstants.CENTER);
+        meterReadout.setOpaque(true);
+        meterReadout.setBackground(new Color(28,36,32));
+        meterReadout.setForeground(new Color(110,231,183));
+        meterReadout.setFont(new Font("Monospaced", Font.BOLD, 15));
+        meterReadout.setBorder(BorderFactory.createCompoundBorder(
+            new LineBorder(BORDER_GREEN, 2),
+            new EmptyBorder(8,10,8,10)
+        ));
+
+        JTextArea analysisArea = new JTextArea("Build a circuit with a 5V Battery, Resistor, and LED, then click 'Calculate' to check current and voltage.");
+        analysisArea.setWrapStyleWord(true);
+        analysisArea.setLineWrap(true);
+        analysisArea.setEditable(false);
+        analysisArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        analysisArea.setBackground(new Color(248,250,249));
+        analysisArea.setBorder(new EmptyBorder(8,8,8,8));
 
 
+        BreadboardPanel simBoard = new BreadboardPanel(true, statusLabel, meterReadout, analysisArea);
+        JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 4));
+        toolbar.setBackground(Color.WHITE);
+
+        String[] tools = {"Red Wire", "Black Wire", "5V Battery", "Resistor (510Ω)", "LED (Red)", "Switch", "Multimeter"};
+        ButtonGroup toolGroup = new ButtonGroup();
+
+        for(String t : tools){
+            JToggleButton btn = new JToggleButton(t);
+            btn.setFont(new Font("SansSerif", Font.PLAIN, 12));
+            btn.setFocusPainted(false);
+            if(t.equals("Red Wire")) btn.setSelected(true);
+            btn.addActionListener(e -> {
+                simBoard.setActiveTool(t);
+                statusLabel.setText(t + " selected. Click two holes to place.");
+            });
+            toolGroup.add(btn);
+            toolbar.add(btn);
+       }
+
+       JButton demoBtn = new JButton("Load LED Example");
+       demoBtn.setFont(new Font("sansSerif", Font.BOLD, 12));
+       demoBtn.addActionListener(e -> simBoard.clearBoard());
+
+       JButton clearBtn = new JButton("Clear");
+       clearBtn.setFont(new Font("SansSerif", Font.PLAIN, 12));
+       clearBtn.addActionListener(e -> simBoard.clearBoard());
+
+       toolbar.add(demoBtn);
+       toolbar.add(clearBtn);
+
+       JPanel centerPanel = new JPanel(new BorderLayout(0,8));
+       centerPanel.setBackground(Color.WHITE);
+       centerPanel.setBorder(BorderFactory.createCompoundBorder(
+            new LineBorder(new Color(205, 212, 2088)),
+            new EmptyBorder(8,10,8,10)
+       ));
+
+       JPanel boardHolder = new JPanel(new GridBagLayout());
+    
+}
 }
