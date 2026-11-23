@@ -365,11 +365,165 @@ private JComponent createQuizPanel(){
 
     return new JScrollPane(panel);
 }
+//day 4
+private JPanel createQuestionBlock(String question, ButtonGroup group, JRadioButton... options){
+    JPanel block = new JPanel();
+    block.setLayout(new BoxLayout(block, BoxLayout.Y_AXIS));
+    block.setBackground(Color.WHITE);
+    block.setAlignmentX(Component.LEFT_ALIGNMENT);
+    block.setBorder(new EmptyBorder(0,0,14,0));
+
+    JLabel qLabel = new JLabel(question);
+    qLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+    block.add(qLabel);
+
+    for(JRadioButton opt : options){
+        opt.setBackground(Color.WHITE);
+        group.add(opt);
+        block.add(opt);
+    }
+
+    return block;
+}
+
+private JPanel createFooter(){
+    JPanel footer = new JPanel();
+    footer.setBackground(new Color(236,239,237));
+    footer.setBorder(BorderFactory.createMatteBorder(1,0,0,0, new Color(205,212,208)));
+    JLabel text = new JLabel("Electronics 101 · IED Hardware Project");
+    text.setForeground(new Color(100,108,103));
+    footer.add(text);
+    return footer;
+}
+
+static class BreadboardPanel extends JPanel {
+    static class Hole {
+        int x, y , radius;
+        String netId;
+        Color ringColor;
+
+        Hole(int x , int y, int radius, String netId, Color ringColor){
+            this.x = x;
+            this.y = y;
+            this.radius = radius;
+            this.netId = netId;
+            this.ringColor = ringColor;
+        }
+        boolean contains(Point p){
+        return p.distance(x,y) <= radius + 4;
+    }
+    }
+    
+    static class ComponentItem{
+        String type;
+        Hole h1, h2;
+        double value;
+        boolean switchClosed = true;
+        boolean ledLit = false;
+
+        ComponentItem(String type, Hole h1, Hole h2, double value){
+            this.type = type;
+            this.h1 = h1;
+            this.h2 = h2;
+            this.value = value;
+        }
+
+        Point midpoint(){
+            return new Point((h1.x + h2.x)/2, (h1.y + h2.y)/2);
+        }
+    }
+
+    private final List<Hole> holes = new ArrayList<>();
+    private final List<ComponentItem> items = new ArrayList<>();
+    private final Map<String, Double> nodeVoltages = new HashMap<>();
+
+    private Hole selectedHole = null;
+    private Hole hoveredHole = null;
+    private Hole probe1 = null, probe2 = null;
+
+    private String activeTool = "Red Wire";
+    private final JLabel statusLabel;
+    private final JLabel meterReadout;
+    private final JTextArea analysisArea;
+
+    private double lastCurrentMa = 0.0;
+    private double lastResistorDrop = 0.0;
+    private double lastLedDrop = 0.0;
+
+    public BreadboardPanel(boolean interactive, JLabel statusLabel, JLabel meterReadout, JTextArea analysisArea){
+        this.statusLabel = statusLabel;
+        this.meterReadout = meterReadout;
+        this.analysisArea = analysisArea;
+
+        Dimension fixedSize = new Dimension(620, 390);
+        setPreferredSize(fixedSize);
+        setMinimumSize(fixedSize);
+        setMaximumSize(fixedSize);
+        setBackground(BOARD_BG);
+        setBorder(new LineBorder(new Color(180,185,182), 1));
+
+        buildHoles();
+
+        if(interactive){
+            addMouseListener(new MouseAdapter(){
+                @Override 
+                public void mouseClicked(MouseEvent e){
+                    handleClick(e.getPoint());
+                }
+            });
+            addMouseMotionListener(new MouseMotionAdapter(){
+                @Override public void mouseMoved(MouseEvent e){
+                    Hole prev = hoveredHole;
+                    hoveredHole = findHoleAt(e.getPoint());
+                    if(prev != hoveredHole) repaint();
+                }
+            });
+        }
+
+    }
+
+    private void buildHoles() {
+            int startX = 32;
+            int colSpacing = 19;
+
+            // Top Power Rails (+ and -)
+            for (int c = 0; c < 30; c++) {
+                int x = startX + c * colSpacing;
+                holes.add(new Hole(x, 34, 5, "TOP_POS", RAIL_RED));
+                holes.add(new Hole(x, 52, 5, "TOP_NEG", RAIL_BLUE));
+            }
+
+            // Top Terminal Strips (A-E)
+            for (int r = 0; r < 5; r++) {
+                int y = 92 + r * 17;
+                for (int c = 0; c < 30; c++) {
+                    holes.add(new Hole(startX + c * colSpacing, y, 4, "TOP_COL_" + c, null));
+                }
+            }
+
+            // Bottom Terminal Strips (F-J)
+            for (int r = 0; r < 5; r++) {
+                int y = 212 + r * 17;
+                for (int c = 0; c < 30; c++) {
+                    holes.add(new Hole(startX + c * colSpacing, y, 4, "BOT_COL_" + c, null));
+                }
+            }
+
+            // Bottom Power Rails (+ and -)
+            for (int c = 0; c < 30; c++) {
+                int x = startX + c * colSpacing;
+                holes.add(new Hole(x, 332, 5, "BOT_POS", RAIL_RED));
+                holes.add(new Hole(x, 350, 5, "BOT_NEG", RAIL_BLUE));
+            }
+        }
+
+        
 
 
 
 
+}
 
-
+    
 
 }
