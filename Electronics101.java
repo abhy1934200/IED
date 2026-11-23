@@ -18,7 +18,7 @@ public class Electronics101 extends JFrame {
     private static final Color RAIL_RED     = new Color(197, 48, 48);
     private static final Color RAIL_BLUE    = new Color(43, 108, 176);
 
-    public Electronics101(){
+public Electronics101(){
         setTitle("Electronics 101");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1100, 780);
@@ -30,7 +30,7 @@ public class Electronics101 extends JFrame {
         add(createFooter(), BorderLayout.SOUTH)//will add next commit so far just planning what methods to make
     }
 
-    private JPanel createHeader(){
+private JPanel createHeader(){
        JPanel header = new JPanel();
        header.setLayout(new BoxLayout(header, BoxLayout.Y_AXIS));
        header.setBackground(HEADER_GREEN);
@@ -53,7 +53,7 @@ public class Electronics101 extends JFrame {
        return header;
        }
 
-       private JTabbedPane createTabs(){
+private JTabbedPane createTabs(){
         JTabbedPane tabs = new JTabbedPane();
         tabs.setFont(new Font("SansSerif", Font.PLAIN, 14));
         tabs.setBorder(new EmptyBorder(8,12,8,12));
@@ -67,7 +67,7 @@ public class Electronics101 extends JFrame {
         return tabs;
        }
 
-       private JComponent createLearnPanel(){
+private JComponent createLearnPanel(){
             JPanel container = new JPanel(new BorderLayout(0, 14));
             container.setBackground(BG_LIGHT);
             container.setBorder(new EmptyBorder(14, 14, 14, 14));
@@ -132,7 +132,7 @@ public class Electronics101 extends JFrame {
         return container;
        }
 
-       private JComponent createBreadboardBasicsPanel(){
+private JComponent createBreadboardBasicsPanel(){
         JPanel main = new JPanel(new BorderLayout(14,10));
         main.setBackground(BG_LIGHT);
         main.setBorder(new EmptyBorder(14, 14, 14, 14));
@@ -183,7 +183,7 @@ public class Electronics101 extends JFrame {
         return main;
        }
 
-       private JComponent createSimulatorPanel(){
+private JComponent createSimulatorPanel(){
         JPanel main = new JPanel (new BorderLayout(14,10 ));
         main.setBackground(BG_LIGHT);
         main.setBorder(new EmptyBorder(12,12,12,12));
@@ -249,11 +249,127 @@ public class Electronics101 extends JFrame {
        JPanel centerPanel = new JPanel(new BorderLayout(0,8));
        centerPanel.setBackground(Color.WHITE);
        centerPanel.setBorder(BorderFactory.createCompoundBorder(
-            new LineBorder(new Color(205, 212, 2088)),
+            new LineBorder(new Color(205, 212, 208)),
             new EmptyBorder(8,10,8,10)
        ));
 
        JPanel boardHolder = new JPanel(new GridBagLayout());
+       //day 3
+       boardHolder.setBackground(new Color(225,228,226 ));
+       boardHolder.setBorder(new LineBorder(new Color(185,190,187)));
+       boardHolder.add(simBoard);
+
+       centerPanel.add(toolbar, BorderLayout.NORTH);
+       centerPanel.add(boardHolder, BorderLayout.CENTER);
+       centerPanel.add(statusLabel, BorderLayout.SOUTH);
+
+       JPanel rightPanel = new JPanel();
+       rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+       rightPanel.setBackground(Color.WHITE);
+       rightPanel.setPreferredSize((new Dimension(280,0)));
+       rightPanel.setBorder(BorderFactory.createCompoundBorder(
+            new LineBorder(new Color(205,212,208)),
+            new EmptyBorder(12,12,12,12)
+       ));
+
+       JLabel mmTitle = new JLabel("Multimeter");
+       mmTitle.setFont(new Font("SansSerif", Font.BOLD, 15));
+       mmTitle.setForeground(HEADER_GREEN);
+       mmTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+       meterReadout.setMaximumSize(new Dimension(Integer.MAX_VALUE, 65));
+       meterReadout.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+       JLabel caTitle = new JLabel("Ohm's Law Check");
+       caTitle.setFont(new Font("SansSerif", Font.BOLD, 15));
+       caTitle.setForeground(HEADER_GREEN);
+       caTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+       JButton analyzeBtn = new JButton("Calculate");
+       analyzeBtn.setBackground(ACCENT_GREEN);
+       analyzeBtn.setForeground(Color.WHITE);
+       analyzeBtn.setFocusPainted(false);
+       analyzeBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
+       analyzeBtn.addActionListener(e -> simBoard.analyzeCircuit());
+
+       JScrollPane analysisScroll = new JScrollPane(analysisArea);
+       analysisScroll.setAlignmentX(Component.LEFT_ALIGNMENT);
+       analysisScroll.setPreferredSize(new Dimension(255,180));
+
+       JLabel tips = new JLabel("<html><body style='width: 240px; color:#555; font-size:11px;'>" +
+                "<b>How to use:</b><br>• Click a placed <b>Switch</b> to flip it on/off.<br>" +
+                "• Use <b>Multimeter</b> to measure voltage between any 2 holes.<br>" +
+                "• Try <b>Load LED Example</b> to test a working circuit.</body></html>");
     
+       tips.setAlignmentX(Component.LEFT_ALIGNMENT);
+       rightPanel.add(mmTitle);
+       rightPanel.add(Box.createVerticalStrut(6));
+       rightPanel.add(meterReadout);
+       rightPanel.add(Box.createVerticalStrut(14));
+       rightPanel.add(caTitle);
+       rightPanel.add(Box.createVerticalStrut(6));
+       rightPanel.add(analyzeBtn);
+       rightPanel.add(Box.createVerticalStrut(8));
+       rightPanel.add(analysisScroll);
+        rightPanel.add(Box.createVerticalStrut(12));
+        rightPanel.add(tips);
+
+        main.add(centerPanel, BorderLayout.CENTER);
+        main.add(rightPanel, BorderLayout.EAST);
+        return main;
 }
+
+private JComponent createQuizPanel(){
+    JPanel panel = new JPanel();
+    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+    panel.setBackground(Color.WHITE);
+    panel.setBorder(new EmptyBorder(20,25,20,25));
+
+    ButtonGroup g1 = new ButtonGroup();
+    JRadioButton q1b = new JRadioButton("Limit current in a cicuit.");
+    panel.add(createQuestionBlock("1. What is the main job of a resistor?", g1,
+        new JRadioButton("Store data"), q1b, new JRadioButton("Generate power")));
+
+    ButtonGroup g2 = new ButtonGroup();
+    JRadioButton q2a = new JRadioButton("Connect parts temporarily without soldering");
+        panel.add(createQuestionBlock("2. What is a breadboard used for?", g2,
+                q2a, new JRadioButton("Increase battery voltage"), new JRadioButton("Measure resistance")));
+
+    ButtonGroup g3 = new ButtonGroup();
+    JRadioButton q3c = new JRadioButton("Breaks the loop so current stops");
+        panel.add(createQuestionBlock("3. What happens when a switch is open?", g3,
+                new JRadioButton("Current speeds up"), new JRadioButton("The LED gets brighter"), q3c));
+
+    JButton gradeBtn = new JButton("Check Answers");
+    gradeBtn.setBackground(ACCENT_GREEN);
+    gradeBtn.setForeground(Color.WHITE);
+    gradeBtn.setFocusPainted(false);
+    gradeBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+    JLabel resultLabel = new JLabel(" ");
+    resultLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+    resultLabel.setForeground(HEADER_GREEN);
+    resultLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+    gradeBtn.addActionListener(e -> {
+        int score = 0;
+        if(q1b.isSelected()) score++;
+        if(q2a.isSelected()) score++;
+        if(q3c.isSelected()) score++;
+        resultLabel.setText("Score: " + score + "/3" + (score ==3 ? "- Nice Job" : "- Check the parts tab and try again"));
+    });
+
+    panel.add(Box.createVerticalStrut(10));
+    panel.add(gradeBtn);
+    panel.add(Box.createVerticalStrut(10));
+    panel.add(resultLabel);
+
+    return new JScrollPane(panel);
+}
+
+
+
+
+
+
+
 }
